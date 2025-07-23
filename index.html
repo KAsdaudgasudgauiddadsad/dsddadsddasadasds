@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Oyun Saytı</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: radial-gradient(circle at top, #1a2a6c, #b21f1f, #fdbb2d);
+      color: white;
+      overflow-x: hidden;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      user-select: none;
+    }
+    .intro {
+      font-weight: 900;
+      font-size: 2.5rem;
+      animation: pulseIntro 3s ease-in-out forwards;
+      margin-top: 30vh;
+    }
+    @keyframes pulseIntro {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(1.05); }
+    }
+    .hidden { display: none !important; }
+    .question-btn {
+      background-color: #4ade80;
+      padding: 0.5rem 1.2rem;
+      border-radius: 1rem;
+      font-weight: 700;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      user-select: none;
+      border: none;
+      color: #000;
+    }
+    .question-btn:hover {
+      background-color: #22c55e;
+      transform: scale(1.1);
+      box-shadow: 0 0 15px #22c55e;
+    }
+    .question-btn.red {
+      background-color: #f87171;
+      color: white;
+    }
+    .question-btn.red:hover {
+      background-color: #ef4444;
+      box-shadow: 0 0 15px #ef4444;
+    }
+    h1, h2 {
+      text-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+    .img-thumb {
+      width: 200px;
+      height: 200px;
+      object-fit: cover;
+      cursor: pointer;
+      border-radius: 1rem;
+      transition: transform 0.4s ease, box-shadow 0.4s ease;
+      margin: 0.5rem;
+      box-shadow: 0 0 8px rgba(0,0,0,0.3);
+    }
+    .img-thumb:hover {
+      transform: scale(1.15);
+      box-shadow: 0 0 25px rgba(255,255,255,0.7);
+      z-index: 10;
+      position: relative;
+    }
+    .img-fullscreen {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.95);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      user-select: none;
+    }
+    .img-fullscreen img {
+      max-width: 90vw;
+      max-height: 90vh;
+      border-radius: 1rem;
+      box-shadow: 0 0 30px #fff;
+    }
+    .close-btn {
+      position: absolute;
+      top: 20px; right: 20px;
+      background: white;
+      color: black;
+      font-size: 1.5rem;
+      border-radius: 0.5rem;
+      padding: 0.2rem 0.6rem;
+      cursor: pointer;
+      user-select: none;
+      box-shadow: 0 0 10px #fff;
+      transition: background 0.3s ease;
+    }
+    .close-btn:hover {
+      background: #ddd;
+    }
+    #hackerScreen {
+      font-family: monospace;
+      background: black;
+      color: #0f0;
+      padding: 1rem 1.5rem;
+      border-radius: 1rem;
+      max-width: 600px;
+      margin: 2rem auto;
+      white-space: pre-wrap;
+      box-shadow: 0 0 20px #0f0;
+      user-select: none;
+    }
+    #hackerScreen button {
+      background-color: #facc15;
+      color: black;
+      font-weight: 700;
+      margin-top: 1rem;
+      padding: 0.5rem 1rem;
+      border-radius: 1rem;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 0 15px #facc15;
+      transition: box-shadow 0.6s ease-in-out;
+      animation: pulseYellow 2s infinite;
+    }
+    @keyframes pulseYellow {
+      0%, 100% { box-shadow: 0 0 15px #facc15; }
+      50% { box-shadow: 0 0 30px #f59e0b; }
+    }
+    .fade {
+      animation: fadeInEffect 0.7s ease forwards;
+      opacity: 0;
+    }
+    @keyframes fadeInEffect {
+      to { opacity: 1; }
+    }
+    .final-text {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-top: 2rem;
+      text-shadow: 0 0 12px #22c55e;
+    }
+    .final-text img {
+      margin-top: 1rem;
+      border-radius: 1rem;
+      box-shadow: 0 0 30px #22c55e;
+      max-width: 320px;
+      user-select: none;
+    }
+  </style>
+</head>
+<body class="text-center p-6 space-y-8">
+
+  <div id="intro" class="intro">👋 Salam! Xoş gəlmisən!</div>
+
+  <div id="startSection" class="hidden">
+    <h1 class="text-4xl font-extrabold mb-6 animate-bounce">Bir oyun oynayaq?</h1>
+    <div>
+      <button onclick="startGame()" class="question-btn">Bəli</button>
+      <button onclick="showHackerScreen()" class="question-btn red ml-4">Xeyr</button>
+    </div>
+  </div>
+
+  <div id="hackerScreen" class="hidden">
+    <pre id="hackerText"></pre>
+    <button onclick="resumeGame()">⚠ Virusun təmizlənməsi üçün bas</button>
+  </div>
+
+  <div id="gameSection" class="hidden space-y-8">
+
+    <!-- Sual 1 -->
+    <div id="question1" class="fade">
+      <h2 class="text-3xl font-extrabold mb-4">Sual 1: 12 x 12 = ?</h2>
+      <div>
+        <button onclick="nextQuestion(1)" class="question-btn">144</button>
+        <button class="question-btn ml-3">124</button>
+        <button class="question-btn ml-3">132</button>
+      </div>
+    </div>
+
+    <!-- Sual 2 -->
+    <div id="question2" class="hidden fade">
+      <h2 class="text-3xl font-extrabold mb-4">Sual 2: Aşağıdakılardan hansı 'arı'dır?</h2>
+      <p class="italic mb-4 text-lg max-w-xl mx-auto">
+        Ayağı var, gəzməz. Qanadı var, uçar. Çiçəyə qonur, sarı şeylər düzəldir.
+      </p>
+      <div>
+        <button onclick="showImages()" class="question-btn">Arı</button>
+        <button class="question-btn ml-3">Ayı</button>
+        <button class="question-btn ml-3">Alan</button>
+      </div>
+    </div>
+
+    <!-- Foto qalereya -->
+    <div id="photos" class="hidden">
+      <div class="flex justify-center flex-wrap gap-6">
+        <img src="foto1.jpg" alt="Foto 1" class="img-thumb" onclick="openImage(this.src)" />
+        <img src="foto2.jpg" alt="Foto 2" class="img-thumb" onclick="openImage(this.src)" />
+        <img src="foto3.jpg" alt="Foto 3" class="img-thumb" onclick="openImage(this.src)" />
+      </div>
+      <button onclick="showFinalMessage()" class="question-btn mt-8">Davam</button>
+    </div>
+
+    <!-- Son mesaj -->
+    <div id="finalText" class="hidden final-text">
+      <p>💸 Bax indi mənə 20 manat verə bilərsən 😄 Sənə icazə verirəm</p>
+      <img src="foto4.jpg" alt="Foto 4" />
+    </div>
+  </div>
+
+  <!-- Tam ekran şəkil -->
+  <div id="fullscreen" class="img-fullscreen hidden" onclick="closeImage()">
+    <span class="close-btn" title="Bağla">❌</span>
+    <img id="fullscreen-img" src="" alt="Tam ekran şəkil" />
+  </div>
+
+  <script>
+    // Giriş animasiyası sonrası startSection göstərilməsi, intro yavaş solur
+    setTimeout(() => {
+      const intro = document.getElementById('intro');
+      intro.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+      intro.style.opacity = 0;
+      intro.style.transform = 'scale(0.9)';
+      setTimeout(() => {
+        intro.classList.add('hidden');
+        document.getElementById('startSection').classList.remove('hidden');
+      }, 500);
+    }, 3000);
+
+    // Oyun başlat
+    function startGame() {
+      document.getElementById('startSection').classList.add('hidden');
+      document.getElementById('gameSection').classList.remove('hidden');
+      fadeIn(document.getElementById('question1'));
+    }
+
+    // Hacker ekranını göstər
+    function showHackerScreen() {
+      document.getElementById('startSection').classList.add('hidden');
+      document.getElementById('hackerScreen').classList.remove('hidden');
+      const hackerText = document.getElementById('hackerText');
+      hackerText.textContent = '';
+      const lines = [
+        '📡 Telefona daxil olunur...',
+        '💾 Kontaktlar yüklənir...',
+        '🔍 Qovluqlar skan edilir...',
+        '📤 Məlumatlar serverə ötürülür...',
+        '⚠️ Virus aşkarlanıb!'
+      ];
+      let index = 0;
+      const interval = setInterval(() => {
+        if (index < lines.length) {
+          hackerText.textContent += lines[index] + '\n';
+          index++;
+        } else {
+          clearInterval(interval);
+        }
+      }, 600);
+    }
+
+    // Virus təmizlə və oyuna davam et
+    function resumeGame() {
+      document.getElementById('hackerScreen').classList.add('hidden');
+      document.getElementById('gameSection').classList.remove('hidden');
+      alert('Virus silindi, oyuna davam et!');
+      fadeIn(document.getElementById('question1'));
+    }
+
+    // Növbəti suala keçid (yalnız sual 1 üçün)
+    function nextQuestion(num) {
+      if(num === 1){
+        fadeOut(document.getElementById('question1'), () => {
+          fadeIn(document.getElementById('question2'));
+        });
+      }
+    }
+
+    // Şəkilləri göstər
+    function showImages() {
+      fadeOut(document.getElementById('question2'), () => {
+        document.getElementById('photos').classList.remove('hidden');
+      });
+    }
+
+    // Son mesajı göstər
+    function showFinalMessage() {
+      document.getElementById('photos').classList.add('hidden');
+      document.getElementById('finalText').classList.remove('hidden');
+    }
+
+    // Şəkili tam ekranda aç
+    function openImage(src) {
+      const full = document.getElementById('fullscreen');
+      document.getElementById('fullscreen-img').src = src;
+      full.classList.remove('hidden');
+    }
+
+    // Tam ekran şəkili bağla
+    function closeImage() {
+      const full = document.getElementById('fullscreen');
+      full.classList.add('hidden');
+      document.getElementById('fullscreen-img').src = '';
+    }
+
+    // Sadə fade-in effekti
+    function fadeIn(el, cb) {
+      el.classList.remove('hidden');
+      el.style.opacity = 0;
+      el.style.transition = 'opacity 0.5s ease';
+      requestAnimationFrame(() => {
+        el.style.opacity = 1;
+      });
+      setTimeout(() => {
+        if(cb) cb();
+      }, 500);
+    }
+    // Sadə fade-out effekti
+    function fadeOut(el, cb) {
+      el.style.opacity = 1;
+      el.style.transition = 'opacity 0.5s ease';
+      requestAnimationFrame(() => {
+        el.style.opacity = 0;
+      });
+      setTimeout(() => {
+        el.classList.add('hidden');
+        if(cb) cb();
+      }, 500);
+    }
+  </script>
+
+</body>
+</html>
